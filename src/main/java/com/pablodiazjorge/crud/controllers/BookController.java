@@ -1,5 +1,8 @@
 package com.pablodiazjorge.crud.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.pablodiazjorge.crud.exceptions.BookNotFoundException;
+import com.pablodiazjorge.crud.exceptions.BadRequestException;
 import com.pablodiazjorge.crud.entities.Book;
 import com.pablodiazjorge.crud.dto.BookWithImageDTO;
 import com.pablodiazjorge.crud.services.BookServiceImpl;
@@ -24,7 +27,6 @@ import java.util.Optional;
 @RequestMapping("/book")
 @CrossOrigin("http://localhost:4200/")
 public class BookController {
-    private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
     @Autowired
     BookServiceImpl bookServiceImpl;
@@ -42,9 +44,10 @@ public class BookController {
         try {
             Book savedBook = bookServiceImpl.saveBook(book, file);
             return new ResponseEntity<>(savedBook, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Error at PostMapping-saveBook() method", e);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (JsonProcessingException e) {
+            throw new BadRequestException("Invalid book JSON format");
+        } catch (IOException e) {
+            throw new BadRequestException("Error processing file");
         }
     }
 
@@ -60,13 +63,11 @@ public class BookController {
      */
     @PutMapping("/{id}/image")
     public ResponseEntity<Book> updateBookImage(@PathVariable Long id, @RequestPart("file") MultipartFile file) throws IOException {
-        Optional<Book> book = bookServiceImpl.getBookById(id);
-        if (book.isPresent()) {
-            Book updatedBook = bookServiceImpl.updateBookImage(file, book.get());
-            return new ResponseEntity<>(updatedBook, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Book book = bookServiceImpl.getBookById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
+
+        Book updatedBook = bookServiceImpl.updateBookImage(file, book);
+        return new ResponseEntity<>(updatedBook, HttpStatus.OK);
     }
 
     /**
@@ -78,13 +79,11 @@ public class BookController {
      */
     @PutMapping
     public ResponseEntity<Book> updateBook(@RequestBody Book book){
-        try {
-            Book savedBook = bookServiceImpl.updateBook(book);
-            return new ResponseEntity<>(savedBook, HttpStatus.OK);
+        if (book.getId() == null || book.getTitle() == null || book.getAuthor() == null || book.getPages() < 0 || book.getPrice() < 0) {
+            throw new BadRequestException("Invalid book data provided for update");
         }
-        catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        Book updatedBook = bookServiceImpl.updateBook(book);
+        return new ResponseEntity<>(updatedBook, HttpStatus.OK);
     }
 
     /**
@@ -101,10 +100,14 @@ public class BookController {
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "title") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDirection) {
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
-        Page<BookWithImageDTO> bookPage = bookServiceImpl.getBooks(pageable, query);
-        return new ResponseEntity<>(bookPage, HttpStatus.OK);
+        try {
+            Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+            Pageable pageable = PageRequest.of(page, size, sort);
+            Page<BookWithImageDTO> bookPage = bookServiceImpl.getBooks(pageable, query);
+            return new ResponseEntity<>(bookPage, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Invalid page or size parameters: " + e.getMessage());
+        }
     }
 
     /**
@@ -116,9 +119,9 @@ public class BookController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        Optional<Book> book = bookServiceImpl.getBookById(id);
-        return book.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() ->
-                new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Book book = bookServiceImpl.getBookById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
     /**
