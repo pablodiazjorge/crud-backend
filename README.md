@@ -3,6 +3,7 @@
 This is an advanced **Book Management API** built using **Spring Boot** with **PostgreSQL** as the database. It provides enhanced RESTful endpoints for managing books, including image upload functionality via **Cloudinary** and improved logging features.
 
 This version includes:
+- **PostgreSQL**: Database management.
 - **Cloudinary Integration**: Securely store and manage book cover images.
 - **Global Error Management**: Ensure consistent error responses across all endpoints.
 - **Comprehensive Unit Tests**: Ensuring robust code coverage.
