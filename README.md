@@ -1,6 +1,6 @@
 # Backend CRUD - Book Management API
 
-This is a **Book Management API** built using **Spring Boot** with **PostgreSQL** as the database. It serves as the backend for the [Frontend CRUD Book Management Application](https://github.com/pablodiazjorge/crud-basic-frontend/tree/simple) and provides RESTful endpoints for complete CRUD (Create, Read, Update, Delete) functionality to manage books.
+This is a **Book Management API** built using **Spring Boot** with **PostgreSQL** as the database. It serves as the backend for the [Frontend CRUD Book Management Application](https://github.com/pablodiazjorge/crud-frontend/tree/simple) and provides RESTful endpoints for complete CRUD (Create, Read, Update, Delete) functionality to manage books.
 
 The project follows a standard Spring Boot architecture with controllers, services, repositories, and entities, leveraging **Spring Data JPA** for database operations.
 
@@ -47,7 +47,7 @@ It connects to a PostgreSQL database and uses Spring Boot’s robust ecosystem f
 ## Project Structure
 
 ```
-crud-basic-backend [crud]
+crud-backend [crud]
 │
 ├── .idea                # IntelliJ IDEA configuration (optional)
 ├── .mvn                 # Maven wrapper files
@@ -86,11 +86,11 @@ Before running the application, ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/pablodiazjorge/crud-basic-backend/tree/simple
+   git clone https://github.com/pablodiazjorge/crud-backend/tree/simple
    ```
 2. Navigate to the project directory:
    ```bash
-   cd crud-basic-backend
+   cd crud-backend
    ```
 3. Install dependencies and build the project:
    ```bash
