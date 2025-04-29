@@ -58,7 +58,7 @@ It integrates with **Cloudinary** for image storage and has robust logging capab
 ## Project Structure
 
 ```
-crud-basic-backend
+crud-backend
 │
 ├── src
 │   ├── main/java/com/example/crud
@@ -89,11 +89,11 @@ Ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/pablodiazjorge/crud-basic-backend/tree/advanced
+   git clone https://github.com/pablodiazjorge/crud-backend/tree/advanced
    ```
 2. Navigate to the project directory:
    ```bash
-   cd crud-basic-backend
+   cd crud-backend
    ```
 3. Install dependencies and build the project:
    ```bash
